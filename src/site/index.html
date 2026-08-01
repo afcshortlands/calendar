@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+    <head>
+        <title>AFC Shortlands – Pitch Calendar</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+                width: 100vw;
+                scroll-snap-type: y mandatory;
+                font-family: sans-serif;
+            }
+            body::before {
+                content: "\00a0";
+                background: #000;
+                display: block;
+                font-size: 1rem;
+                padding: 0.5rem 0;
+                z-index: 2;
+            }
+            body::before,
+            #header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+            #header {
+                color: #FFF;
+                z-index: 3;
+            }
+            #title {
+                font-size: 1rem;
+                margin: 0;
+                padding: 0.5rem 1rem;
+                position: relative;
+            }
+            .page {
+                min-height: 100vh;
+                scroll-snap-align: start;
+                display: flex;
+                flex-direction: column;
+            }
+            .title {
+                background: #000;
+                color: #FFF;
+                margin: 0;
+                padding: 0.5rem 1rem;
+                text-align: right;
+                position: sticky;
+                top: 0;
+                font-size: 1rem;
+                z-index: 2;
+            }
+            .content {
+                flex-grow: 1;
+                display: grid;
+                grid-template-columns: min-content 1fr;
+                grid-template-rows: min-content repeat(8, 1fr);
+            }
+            .column {
+                min-width: 15rem;
+                box-sizing: border-box;
+                display: grid;
+                grid-template-rows: subgrid;
+                grid-row: 1 / -1;
+                padding: 0 0.5rem;
+                scroll-snap-align: start;
+            }
+            .labels {
+                min-width: 0;
+                grid-row: 1 / -1;
+                display: grid;
+                grid-template-rows: subgrid;
+                border-right: solid 0.1rem #999;
+                text-align: right;
+                position: relative;
+                background: #00000009;
+                font-size: 0.8rem;
+
+                & > * {
+                    margin-top: -0.5rem;
+                }
+            }
+            .pitches {
+                overflow-x: auto;
+                display: grid;
+                grid-auto-flow: column;
+                grid-template-rows: subgrid;
+                grid-row: 1 / -1;
+                scroll-snap-type: x mandatory;
+                scroll-padding-inline: 1rem;
+
+                .column {
+                    border-left: solid 0.1rem #EEE;
+                }
+            }
+
+            .label {
+                font-size: 0.75rem;
+                margin: 0;
+                padding: 1rem 0;
+                text-align: center;
+                background: orange;
+                border-radius: 0.5rem;
+                margin: 0.5rem 0;
+                outline: solid 1px #DDD;
+
+                .empty & {
+                    background: color-mix(in srgb, orange 25%, transparent);
+                }
+            }
+            .block {
+                border-top: solid 0.1rem #EEE;
+                position: relative;
+
+                .empty &:after {
+                    content: "";
+                    position: absolute;
+                    top: 0.5rem;
+                    left: 0;
+                    right: 0;
+                    bottom: 0.5rem;
+                    background: repeating-linear-gradient(
+                                    45deg,
+                                    transparent,
+                                    transparent 4px,
+                                    #EEE 4px,
+                                    #EEE 6px,
+                                    transparent 6px,
+                                    transparent 10px
+                                );
+                }
+            }
+            .event {
+                position: absolute;
+                top: 0;
+                left: 0.5rem;
+                right: 0.5rem;
+                height: 50%;
+                padding: 1rem;
+                box-sizing: border-box;
+                border-radius: 0.5rem;
+                background: linear-gradient(to bottom, #EEE, #EEE 90%, #E6E6E6);
+                box-shadow: 0 0.1rem 0.1rem #999, inset 0.1rem 0.1rem 0.1rem #FFF6;
+                z-index: 1;
+                font-size: 0.8rem;
+
+                .summary {
+                    font-size: 0.9rem;
+                    font-weight: bold;
+                    margin: 0;
+                }
+            }
+            @media (max-width: 40rem) {
+                .pitches {
+                    .column {
+                        &.empty {
+                            display: none;
+                            max-width: 2rem;
+                            min-width: 2rem;
+                            position: relative;
+                            order: 2;
+
+                            .label {
+                                opacity: 0.25;
+                                position: absolute;
+                                top: 0;
+                                right: 100%;
+                                transform: rotate(-90deg);
+                                transform-origin: 100% 0;
+                                white-space: nowrap;
+                                padding: 0.5rem 1rem;
+                            }
+
+                            .block {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header id="header">
+            <h1 id="title">Pitch Calendar</h1>
+        </header>
+        {%- set autofocus = true -%}
+        {% for date, day in calendar.dates -%}
+            <section class="page" id="{{ date }}" tabindex="-1"
+                {%- if autofocus and date | isNext -%}
+                    {% set autofocus = false %} autofocus
+                {%- endif -%}>
+                <h2 class="title"><span>{{ date | toDate | datestring({weekday: "short", year: "2-digit", month: "short", day: "numeric"}) }}</span></h2>
+                <div class="content">
+                    <div class="labels column" aria-hidden="true">
+                        <div></div>
+                        {% for i in range(9, 17) -%}
+                            <div>{{ i }}:00</div>
+                        {%- endfor %}
+                    </div>
+                    <div class="pitches">
+                        {%- for id, pitch in calendar.calendars -%}
+                            {%- set events = day | intersect(pitch.events) | hydrate(calendar.events) -%}
+                            <div class="column{% if not events | length %} empty{% endif %}" id={{ date }}-{{ id }}>
+                                <h3 class="label">{{ pitch.desc }}</h3>
+                                {%- for i in range(9, 17) -%}
+                                    <div class="block">
+                                        {%- for event in events -%}
+                                            {%- if event | inBlock(i) -%}
+                                                <article class="event" style="height: {{ event | height }}%; top: {{ event | offset }}%;">
+                                                    <h2 class="summary">{{ event.summary }}</h2>
+                                                    <p>⏲ {{ event.start | timestring }}–{{ event.end | timestring }}</p>
+                                                </article>
+                                            {%- endif -%}
+                                        {%- endfor -%}
+                                    </div>
+                                {%- endfor -%}
+                            </div>
+                        {%- endfor -%}
+                    </div>
+                </div>
+            </section>
+        {%- endfor %}
+    </body>
+</html>

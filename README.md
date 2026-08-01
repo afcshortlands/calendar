@@ -1,2 +1,1 @@
-# calendar
-Pitch Booking Calendar
+# Pitch Booking Calendar
