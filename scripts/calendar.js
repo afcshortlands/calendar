@@ -47,7 +47,7 @@ function formatEvent(calendarId, event) {
         .update(start.toISOString())
         .update(end.toISOString())
         .digest("hex").substring(0, 8);
-    return {start, end, summary, datetype, description, id};
+    return {calendarId, start, end, summary, datetype, description, id};
 }
 
 Promise.all(feeds).then(async (calendars) => {
@@ -61,7 +61,7 @@ Promise.all(feeds).then(async (calendars) => {
         const name = vcalendar.name ?? vcalendar['WR-CALNAME'];
         const desc = vcalendar.description ?? vcalendar['WR-CALDESC'] ?? name;
         const tz = vcalendar.timezone ?? vcalendar['WR-TIMEZONE'];
-        const calendar = {url, calendarId, name, desc, tz, events: []};
+        const calendar = {url, id: calendarId, name, desc, tz, events: []};
         rsp.calendars[calendarId] = calendar;
 
         Object.values(events).flatMap(({type, ...data}) => {

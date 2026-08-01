@@ -1,6 +1,6 @@
 export default async function (eleventy) {
     const config = {
-		templateFormats: ['md', 'njk', 'html'],
+		templateFormats: ['html', '11ty.js'],
         markdownTemplateEngine: 'njk',
 		htmlTemplateEngine: 'njk',
 		passthroughFileCopy: true,

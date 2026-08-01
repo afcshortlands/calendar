@@ -4,6 +4,10 @@
         <title>AFC Shortlands – Pitch Calendar</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="alternate" type="text/calendar" href="/calendar.ics" title="All pitches" />
+        {%- for id, calendar in calendar.calendars -%}
+        <link rel="alternate" type="text/calendar" href="/{{ id }}.ics" title="{{ calendar.name }}" />
+        {%- endfor -%}
         <style>
             html,
             body {
@@ -230,7 +234,7 @@
                         {%- for id, pitch in calendar.calendars -%}
                             {%- set events = day | intersect(pitch.events) | hydrate(calendar.events) -%}
                             <div class="column{% if not events | length %} empty{% endif %}" id={{ date }}-{{ id }}>
-                                <h3 class="label">{{ pitch.desc }}</h3>
+                                <h3 class="label">{{ pitch.name }}</h3>
                                 {%- for i in range(9, 17) -%}
                                     <div class="block">
                                         {%- for event in events -%}
