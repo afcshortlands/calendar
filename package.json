@@ -17,7 +17,7 @@
     "start": "npx @11ty/eleventy --serve",
     "watch": "npx @11ty/eleventy --watch",
     "build": "npm run build:calendar; npm run build:site",
-    "build:calendar": "mkdir -p ./src/data; node ./scripts/calendar.js @.calendars > ./src/data/calendar.json",
+    "build:calendar": "mkdir -p ./src/data; node ./scripts/calendar.js > ./src/data/calendar.json",
     "build:site": "npx @11ty/eleventy"
   },
   "dependencies": {
