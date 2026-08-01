@@ -5,6 +5,7 @@ export const config = { path: "/api/email-update" };
 export default async (req) => {
     const auth = await req.headers.get("Authorization");
     if (auth !== `Basic ${process.env.EMAIL_UPDATE_AUTH_KEY}`) {
+        console.log(`"${auth}"`, `"${process.env.EMAIL_UPDATE_AUTH_KEY}"`);
         return Response.json({}, { status: 401, statusText: "Unauthorized" });
     }
 
