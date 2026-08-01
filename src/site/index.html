@@ -149,11 +149,33 @@
                 box-shadow: 0 0.1rem 0.1rem #999, inset 0.1rem 0.1rem 0.1rem #FFF6;
                 z-index: 1;
                 font-size: 0.8rem;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+
+                .header {
+                    margin: 0 0 0.25rem;
+                }
 
                 .summary {
                     font-size: 0.9rem;
                     font-weight: bold;
+                    display: inline;
                     margin: 0;
+                }
+
+                .description {
+                    margin: 0;
+                    display: inline;
+
+                    &::before {
+                        content: " – ";
+                    }
+                }
+
+                .time {
+                    margin: auto 0 0;
+                    text-align: right;
                 }
             }
             @media (max-width: 40rem) {
@@ -213,9 +235,12 @@
                                     <div class="block">
                                         {%- for event in events -%}
                                             {%- if event | inBlock(i) -%}
-                                                <article class="event" style="height: {{ event | height }}%; top: {{ event | offset }}%;">
-                                                    <h2 class="summary">{{ event.summary }}</h2>
-                                                    <p>⏲ {{ event.start | timestring }}–{{ event.end | timestring }}</p>
+                                                <article class="event" style="min-height: {{ event | height }}%; top: {{ event | offset }}%;">
+                                                    <div class="header">
+                                                        <h2 class="summary">{{ event.summary }}</h2>
+                                                        {%- if event.description %}<p class="description">{{ event.description }}</p>{% endif -%}
+                                                    </div>
+                                                    <p class="time">⏲ {{ event.start | timestring }}–{{ event.end | timestring }}</p>
                                                 </article>
                                             {%- endif -%}
                                         {%- endfor -%}
