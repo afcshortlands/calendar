@@ -11,6 +11,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v7
       - name: Archive repo
-        run: git archive -o releaase.zip HEAD
+        run: |
+          {
+            echo 'GIT_ARCHIVE<<EOF'
+            git archive HEAD
+            echo EOF
+          }  >> "$GITHUB_ENV"
       - name: Create build from archive
-        run: echo "Building from archive"
+        run: |
+          echo "$GIT_ARCHIVE"
