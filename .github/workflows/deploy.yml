@@ -9,14 +9,17 @@ jobs:
     runs-on: ubuntu-slim
     steps:
       - name: Checkout repo
+        id: checkout
         uses: actions/checkout@v7
       - name: Archive repo
+        id: archive
         run: |
-          {
-            echo 'GIT_ARCHIVE<<EOF'
-            git archive HEAD
-            echo EOF
-          }  >> "$GITHUB_ENV"
+          tmpfile=$(mktemp /tmp/archive.XXXXXX)
+          echo "ARCHIVE_FILE=${tmpfile}" >> "$GITHUB_ENV"
+          git archive --format=zip --output="$tmpfile" HEAD
       - name: Create build from archive
+        id: build
+        env:
+          ARCHIVE_FILE: ${{ steps.archive.outputs.ARCHIVE_FILE }}
         run: |
-          echo "$GIT_ARCHIVE"
+          echo "$ARCHIVE_FILE"
