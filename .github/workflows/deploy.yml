@@ -15,7 +15,6 @@ jobs:
         id: archive
         run: |
           tmpfile=$(mktemp /tmp/archive.XXXXXX)
-          echo "$tmpfile"
           echo "ARCHIVE_FILE=${tmpfile}" >> "$GITHUB_OUTPUT"
           git archive --format=zip --output="$tmpfile" HEAD
       - name: Create build from archive
@@ -23,4 +22,4 @@ jobs:
         env:
           ARCHIVE_FILE: ${{ steps.archive.outputs.ARCHIVE_FILE }}
         run: |
-          echo "$ARCHIVE_FILE"
+          cat "$ARCHIVE_FILE"
