@@ -1,0 +1,18 @@
+on:
+#  schedule:
+#  - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-slim
+    steps:
+      - name: Install Hostinger API
+        run: brew install hostinger/tap/hostinger
+      - name: Checkout repo
+        uses: actions/checkout@v7
+      - name: Archive repo
+        run: git archive -o releaase.zip HEAD
+      - name: Create build from archive
+        run: echo "Building from archive"
